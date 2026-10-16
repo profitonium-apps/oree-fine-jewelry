@@ -9,15 +9,14 @@
 <meta name="theme-color" content="#EAE0CA">
 <meta property="og:title" content="Orée — Fine Jewelry from a Provence Atelier">
 <meta property="og:description" content="A grain of gold, becoming forever.">
-<meta property="og:image" content="img/f0-1536.webp">
+<meta property="og:image" content="img/v2-hero-5-box-1536.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232B3019'/%3E%3Ccircle cx='13' cy='18.5' r='6' fill='none' stroke='%23EAE0CA' stroke-width='1.5'/%3E%3Ccircle cx='19.5' cy='18.5' r='6' fill='none' stroke='%23EAE0CA' stroke-width='1.5'/%3E%3Cpath d='M13 7l2 2.6-2 2.6-2-2.6z' fill='%23D99A2B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap">
-<link rel="preload" as="image" href="img/f0-1536.webp" imagesrcset="img/f0-800.webp 800w, img/f0-1536.webp 1536w" imagesizes="100vw" media="(min-aspect-ratio: 4/5)">
-<link rel="preload" as="image" href="img/f0-m-1024.webp" imagesrcset="img/f0-m-600.webp 600w, img/f0-m-1024.webp 1024w" imagesizes="100vw" media="(max-aspect-ratio: 4/5)">
+<link rel="preload" as="image" href="img/v2-hero-1-grain-1536.webp" imagesrcset="img/v2-hero-1-grain-800.webp 800w, img/v2-hero-1-grain-1536.webp 1536w" imagesizes="100vw">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -61,26 +60,30 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="header is-film" data-header>
-  <span class="header__progress" aria-hidden="true"><span data-film-progress></span></span>
+<div class="announce" role="region" aria-label="Announcements">
+  <div class="announce__track" data-announce>
+    <p class="is-active">Free insured delivery across the US, Canada &amp; Europe</p>
+    <p>0.0% APR: pay in 4 interest-free instalments*</p>
+    <p>A photograph of your actual piece before it ships</p>
+  </div>
+</div>
+
+<header class="header" data-header>
   <div class="header__inner">
     <div class="header__left">
       <button class="icon-btn header__menu" type="button" data-open-menu aria-label="Open menu"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
-      <nav class="header__nav header__nav--site" aria-label="Primary">
+      <nav class="header__nav" aria-label="Primary">
         <a href="#collection">Collection</a>
         <a href="#pierres">Stones</a>
+        <a href="#atelier">Atelier</a>
         <a href="#look">Lookbook</a>
         <a href="#rendezvous">Try-on</a>
-        <a href="#contact">Atelier</a>
       </nav>
     </div>
     <a class="logo" href="#top" aria-label="Orée — home">
       <svg class="logo__mark" aria-hidden="true"><use href="#logo-knot"/></svg>
       <span class="logo__word">ORÉE</span>
     </a>
-    <nav class="header__film" aria-label="Chapters of the film" data-film-nav>
-      <a href="#recolte">Récolte</a><a href="#fonte">Fonte</a><a href="#forge">Forge</a><a href="#sertissage">Sertissage</a><a href="#polissage">Polissage</a><a href="#ecrin">Écrin</a><a href="#film-collection">Collection</a>
-    </nav>
     <div class="header__actions">
       <div class="currency" data-currency>
         <button type="button" class="currency__btn" aria-haspopup="listbox" aria-expanded="false" data-currency-btn><span data-currency-label>USD $</span><svg aria-hidden="true"><use href="#i-chev"/></svg></button>
@@ -99,113 +102,40 @@
 
 <main id="main">
 
-  <!-- 1 · The film: seven full-screen chapters over one scroll-driven stage (harvest to packshot) -->
-  <section class="film" id="top" data-film aria-label="How an Orée ring is made">
-    <div class="film__stage" aria-hidden="true">
-      <div class="film__frames" data-film-frames></div>
-      <canvas class="film__dust" data-dust></canvas>
-      <div class="film__shade"></div>
+  <!-- 1 · Hero: grain to packshot, scrubbed by scroll -->
+  <section class="hero" id="top" data-hero aria-label="A grain of gold, becoming forever">
+    <div class="hero__sticky">
+      <div class="hero__frames">
+        <img class="hero__frame is-active" data-frame src="img/v2-hero-1-grain-1536.webp" srcset="img/v2-hero-1-grain-800.webp 800w, img/v2-hero-1-grain-1536.webp 1536w" sizes="100vw" alt="Grains of recycled gold on travertine" fetchpriority="high">
+        <img class="hero__frame" data-frame src="img/v2-hero-2-wire-1536.webp" srcset="img/v2-hero-2-wire-800.webp 800w, img/v2-hero-2-wire-1536.webp 1536w" sizes="100vw" alt="A gold wire curling into an open circle" loading="lazy">
+        <img class="hero__frame" data-frame src="img/v2-hero-3-band-1536.webp" srcset="img/v2-hero-3-band-800.webp 800w, img/v2-hero-3-band-1536.webp 1536w" sizes="100vw" alt="A gold band with four empty claws" loading="lazy">
+        <img class="hero__frame" data-frame src="img/v2-hero-4-ring-1536.webp" srcset="img/v2-hero-4-ring-800.webp 800w, img/v2-hero-4-ring-1536.webp 1536w" sizes="100vw" alt="The Aube ring with its oval diamond set" loading="lazy">
+        <img class="hero__frame" data-frame src="img/v2-hero-5-box-1536.webp" srcset="img/v2-hero-5-box-800.webp 800w, img/v2-hero-5-box-1536.webp 1536w" sizes="100vw" alt="The finished ring in an olive leather box with a honey ribbon" loading="lazy">
+      </div>
+      <svg class="hero__thread" aria-hidden="true"><path data-thread d=""/><circle data-thread-bead r="4"/></svg>
+      <div class="hero__copy">
+        <p class="eyebrow"><span class="dot"></span> Maison Orée · Atelier en Provence</p>
+        <h1 class="hero__title">A grain of gold,<br><span class="tc">becoming forever.</span></h1>
+        <ol class="hero__steps" data-steps>
+          <li class="is-active" aria-current="step"><span>01</span><b>Récolte</b> Recycled 18k gold, gathered and refined.</li>
+          <li><span>02</span><b>Fil</b> Drawn by hand into a whisper of wire.</li>
+          <li><span>03</span><b>Monture</b> Shaped and polished; four claws wait.</li>
+          <li><span>04</span><b>Pierre</b> An oval diamond, set under the loupe.</li>
+          <li><span>05</span><b>Écrin</b> Photographed, boxed and sent to you.</li>
+        </ol>
+        <div class="hero__cta">
+          <button class="btn btn--ink" type="button" data-open-product="aube">Shop the Aube · <span data-price-usd="3450"></span></button>
+          <a class="btn btn--ghost" href="#rendezvous">Book a try-on</a>
+        </div>
+        <ul class="hero__trust">
+          <li><svg aria-hidden="true"><use href="#i-star"/></svg> 4.9 from 1,240 clients</li>
+          <li>Free insured delivery</li>
+          <li>0.0% APR instalments*</li>
+        </ul>
+      </div>
+      <div class="hero__progress" aria-hidden="true"><span data-hero-progress></span></div>
+      <p class="hero__cue" data-hero-cue aria-hidden="true">Scroll to make the ring</p>
     </div>
-    <div class="film__chapters">
-      <article class="fchap" id="film-intro" data-fchap data-frames="f0" data-nav="Orée">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">Maison Orée · Atelier en Provence</p>
-            <h1 class="fchap__title">Fine jewelry,<br>made by hand<br>in Provence.</h1>
-            <p class="fchap__lede">Two jewellers, one stone mas, and gold that already existed. Scroll to watch a ring being made, from the first grain to the final packshot.</p>
-            <ul class="fchap__pills"><li>100% recycled gold</li><li>Set by hand</li><li>Insured delivery, free</li></ul>
-            <div class="fchap__cta"><a class="btn btn--amber" href="#collection">Shop the collection</a><a class="btn btn--glass" href="#rendezvous">Book a try-on</a></div>
-            
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="recolte" data-fchap data-frames="f1a f1b f1c" data-nav="Récolte">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">I · La Récolte</p>
-            <h2 class="fchap__title">Gold that<br>already existed.</h2>
-            <p class="fchap__lede">Old chains, odd earrings and workshop filings are gathered, weighed and refined back to pure gold before Élise alloys it to 18k.</p>
-            <ul class="fchap__pills"><li>0 g newly mined</li><li>Weighed by hand</li></ul>
-            
-            <button class="fchap__more" type="button" data-open-step="0"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="fonte" data-fchap data-frames="f2a f2b f2c" data-nav="Fonte">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">II · La Fonte</p>
-            <h2 class="fchap__title">Poured<br>at 1,064 °C.</h2>
-            <p class="fchap__lede">Marcel melts in small batches, so every ingot can be traced to the pieces it becomes. The pour takes seconds; the alloy is checked before and after.</p>
-            <ul class="fchap__pills"><li>Small batches</li><li>Traceable ingots</li></ul>
-            
-            <button class="fchap__more" type="button" data-open-step="1"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="forge" data-fchap data-frames="f3a f3b f3c" data-nav="Forge">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">III · La Forge</p>
-            <h2 class="fchap__title">Drawn, rolled,<br>rounded.</h2>
-            <p class="fchap__lede">The ingot is rolled, drawn through steel plates until it is fine as a band, then rounded on the mandrel. Forged gold is denser, so it wears longer.</p>
-            <ul class="fchap__pills"><li>18 drawplate passes</li><li>Forged, never cast thin</li></ul>
-            
-            <button class="fchap__more" type="button" data-open-step="2"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="sertissage" data-fchap data-frames="f4a f4b f4c" data-nav="Sertissage">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">IV · Le Sertissage</p>
-            <h2 class="fchap__title">Four claws,<br>one steady hand.</h2>
-            <p class="fchap__lede">The stone is seated, then each claw is pushed over by hand and checked under the loupe. Low enough for knitwear, tight enough for a lifetime.</p>
-            <ul class="fchap__pills"><li>0.1 mm tolerance</li><li>Checked under the loupe</li></ul>
-            
-            <button class="fchap__more" type="button" data-open-step="3"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="polissage" data-fchap data-frames="f5a f5b f5c" data-nav="Polissage">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">V · Le Polissage</p>
-            <h2 class="fchap__title">Polished three<br>times, seen twice.</h2>
-            <p class="fchap__lede">Felt, then cotton, then a mirror finish. A second jeweller holds every piece to the window before it is hallmarked.</p>
-            <ul class="fchap__pills"><li>Felt · cotton · mirror</li><li>Hallmarked</li></ul>
-            
-            <button class="fchap__more" type="button" data-open-step="4"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap" id="ecrin" data-fchap data-frames="f6a f6b f6c" data-nav="Écrin">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">VI · L’Écrin</p>
-            <h2 class="fchap__title">You see it<br>before we send it.</h2>
-            <p class="fchap__lede">Every order is photographed on our plinth in natural light and the picture is emailed to you. Then it is boxed in olive leather and tied in honey ribbon.</p>
-            <ul class="fchap__pills"><li>A photo of your piece</li><li>Olive box, honey ribbon</li></ul>
-            <div class="fchap__cta"><button class="btn btn--amber" type="button" data-open-product="aube">Shop the Aube · <span data-price-usd="3450"></span></button></div>
-            <button class="fchap__more" type="button" data-open-step="5"><span aria-hidden="true">+</span> More about this step</button>
-          </div>
-        </div>
-      </article>
-      <article class="fchap fchap--wide" id="film-collection" data-fchap data-frames="f7" data-nav="Collection">
-        <div class="fchap__pin">
-          <div class="fchap__text wrap" data-fchap-text>
-            <p class="fchap__eyebrow">La collection</p>
-            <h2 class="fchap__title">Eight pieces,<br>one atelier.</h2>
-            <p class="fchap__lede">Rings, pearls, pendants and a tennis bracelet, each made the way you just watched.</p>
-            
-            <div class="frail" data-film-rail></div><div class="fchap__cta"><a class="btn btn--amber" href="#collection">Shop all eight</a><a class="btn btn--glass" href="#rendezvous">Try them on</a></div>
-            
-          </div>
-        </div>
-      </article>
-    </div>
-    <span class="film__end" data-film-end aria-hidden="true"></span>
-    <p class="film__cue" data-film-cue aria-hidden="true">Scroll to watch it being made</p>
   </section>
 
   <!-- 2 · Facts marquee -->
@@ -287,6 +217,110 @@
         </div>
         <p class="micro">Made to order in 7–10 days · or 4 × <span data-stone-split></span> at 0.0% APR*</p>
       </div>
+    </div>
+  </section>
+
+  <!-- 5 · From harvest to packshot: six chapters, pinned and scrolled sideways on desktop -->
+  <section class="atelier" id="atelier" data-atelier aria-labelledby="atelier-title">
+    <div class="atelier__sticky">
+      <div class="atelier__head wrap">
+        <div>
+          <p class="eyebrow eyebrow--light">De la récolte au packshot</p>
+          <h2 id="atelier-title" class="h2">From harvest <span class="tc tc--light">to packshot,</span> in six chapters.</h2>
+        </div>
+        <ol class="atelier__nav" aria-label="Chapters" data-atelier-nav>
+          <li><button type="button" data-goto="0" aria-current="true"><span>I</span>Récolte</button></li>
+          <li><button type="button" data-goto="1"><span>II</span>Fonte</button></li>
+          <li><button type="button" data-goto="2"><span>III</span>Forge</button></li>
+          <li><button type="button" data-goto="3"><span>IV</span>Sertissage</button></li>
+          <li><button type="button" data-goto="4"><span>V</span>Polissage</button></li>
+          <li><button type="button" data-goto="5"><span>VI</span>Packshot</button></li>
+        </ol>
+      </div>
+      <div class="atelier__viewport">
+        <div class="atelier__track" data-atelier-track>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c1-recolte-1024.webp" srcset="img/c1-recolte-600.webp 600w, img/c1-recolte-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="Hands sorting old gold jewelry into a terracotta bowl" loading="lazy">
+              <img class="chap__detail" src="img/c1-grains-520.webp" alt="Recycled gold grains pouring from a brass scoop" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">I</p>
+              <p class="chap__label">La Récolte · Harvest</p>
+              <h3 class="h3">It starts with gold that already exists.</h3>
+              <p>Old jewelry, workshop filings and broken chains are gathered, assayed and refined back to pure gold before we alloy it to 18k. Nothing is newly mined.</p>
+              <p class="stat"><b>0 g</b> newly mined gold</p>
+            </div>
+          </article>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c2-fonte-1024.webp" srcset="img/c2-fonte-600.webp 600w, img/c2-fonte-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="Molten gold poured from a crucible into an ingot mould" loading="lazy">
+              <img class="chap__detail" src="img/c2-lingot-520.webp" alt="A fresh gold ingot cooling in its mould" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">II</p>
+              <p class="chap__label">La Fonte · Melt</p>
+              <h3 class="h3">Poured by hand at 1,064&nbsp;°C.</h3>
+              <p>We melt in small batches so every ingot can be traced to the pieces it becomes. The pour takes seconds; the alloy is checked before and after.</p>
+              <p class="stat"><b>1,064 °C</b> where gold turns liquid</p>
+            </div>
+          </article>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c3-forge-1024.webp" srcset="img/c3-forge-600.webp 600w, img/c3-forge-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="A jeweller drawing gold wire through a steel drawplate" loading="lazy">
+              <img class="chap__detail" src="img/c3-mandrin-520.webp" alt="A gold band shaped on a steel ring mandrel" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">III</p>
+              <p class="chap__label">La Forge · Form</p>
+              <h3 class="h3">Drawn, rolled, rounded.</h3>
+              <p>The ingot is rolled flat, drawn through steel plates until it is fine as a band, then rounded on the mandrel and soldered closed. Forged metal is denser, so it wears longer.</p>
+              <p class="stat"><b>18</b> passes through the drawplate</p>
+            </div>
+          </article>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c4-sertissage-1024.webp" srcset="img/c4-sertissage-600.webp 600w, img/c4-sertissage-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="A jeweller setting a diamond at the bench" loading="lazy">
+              <img class="chap__detail" src="img/c4-griffes-520.webp" alt="A claw pushed over the edge of an oval diamond" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">IV</p>
+              <p class="chap__label">Le Sertissage · Set</p>
+              <h3 class="h3">Four claws, one steady hand.</h3>
+              <p>The stone is seated, then each claw is pushed over by hand and checked under the loupe. Low enough for knitwear, tight enough for a lifetime.</p>
+              <p class="stat"><b>0.1 mm</b> tolerance on every claw</p>
+            </div>
+          </article>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c5-polissage-1024.webp" srcset="img/c5-polissage-600.webp 600w, img/c5-polissage-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="A ring polished on a felt wheel in a beam of light" loading="lazy">
+              <img class="chap__detail" src="img/c5-controle-520.webp" alt="A finished ring inspected under a brass loupe" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">V</p>
+              <p class="chap__label">Le Polissage · Polish</p>
+              <h3 class="h3">Three polishes, two inspections.</h3>
+              <p>Felt, then cotton, then a final mirror polish. A second jeweller inspects the piece before it is hallmarked. If it isn't right, it goes back to the bench.</p>
+              <p class="stat"><b>2</b> sets of eyes on every piece</p>
+            </div>
+          </article>
+          <article class="chap" data-chap>
+            <div class="chap__media">
+              <img class="chap__main" src="img/c6-studio-1024.webp" srcset="img/c6-studio-600.webp 600w, img/c6-studio-1024.webp 1024w" sizes="(min-width: 900px) 30vw, 70vw" alt="A ring photographed on a plinth in the atelier studio" loading="lazy">
+              <img class="chap__detail" src="img/c6-coffret-520.webp" alt="The olive leather box, card and honey ribbon" loading="lazy">
+            </div>
+            <div class="chap__text">
+              <p class="chap__num">VI</p>
+              <p class="chap__label">Le Packshot · Photograph</p>
+              <h3 class="h3">You see your piece before we send it.</h3>
+              <p>Every order is photographed in our studio in natural light, and the picture is emailed to you before dispatch. Then it is boxed in olive leather, tied in honey ribbon and insured to your door.</p>
+              <p class="stat"><b>1</b> photo of your actual piece</p>
+              <button class="btn btn--amber" type="button" data-open-product="aube">Begin with the Aube</button>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="atelier__progress" aria-hidden="true"><span data-atelier-progress></span></div>
     </div>
   </section>
 
@@ -502,7 +536,7 @@
       <p>Fine jewelry in recycled gold and traced stones, made by hand in Provence.</p>
     </div>
     <nav aria-label="Shop"><h3>Shop</h3><a href="#collection">Collection</a><a href="#pierres">Provence stones</a><a href="#look">Lookbook</a><button class="link-btn" type="button" data-open-sizer>Ring sizer</button></nav>
-    <nav aria-label="Maison"><h3>Maison</h3><a href="#recolte">From harvest to packshot</a><a href="#rendezvous">Book a try-on</a><a href="#contact">The atelier</a></nav>
+    <nav aria-label="Maison"><h3>Maison</h3><a href="#atelier">From harvest to packshot</a><a href="#rendezvous">Book a try-on</a><a href="#contact">The atelier</a></nav>
     <nav aria-label="Client care"><h3>Client care</h3><a href="#faq">Shipping &amp; returns</a><button class="link-btn" type="button" data-open-account>Your account</button><a href="#contact">Contact</a></nav>
   </div>
   <div class="wrap footer__legal">
@@ -527,7 +561,7 @@
   <nav class="menu__nav" aria-label="Mobile">
     <a href="#collection" data-close>Collection</a>
     <a href="#pierres" data-close>Provence stones</a>
-    <a href="#recolte" data-close>From harvest to packshot</a>
+    <a href="#atelier" data-close>From harvest to packshot</a>
     <a href="#look" data-close>Lookbook</a>
     <a href="#rendezvous" data-close>Book a try-on</a>
     <a href="#contact" data-close>The atelier</a>
@@ -637,18 +671,6 @@
     <div class="acct__panel" role="tabpanel" data-acct-panel="appointments" hidden></div>
     <div class="acct__panel" role="tabpanel" data-acct-panel="orders" hidden><div class="empty"><p>No orders yet.</p><p class="micro">When you order, you'll follow each piece here from the bench to your door, packshot included.</p><a class="btn btn--ghost" href="#collection" data-close>Explore the collection</a></div></div>
     <button class="link-btn acct__signout" type="button" data-acct-signout hidden>Sign out</button>
-  </div>
-</dialog>
-
-<!-- Step detail ("More about this step") -->
-<dialog class="sheet sheet--right step" data-step aria-labelledby="step-title">
-  <div class="sheet__head"><p class="eyebrow" data-step-eyebrow></p><button class="icon-btn" type="button" data-close aria-label="Close"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div>
-  <div class="sheet__body">
-    <h2 id="step-title" class="h3" data-step-title></h2>
-    <figure class="step__media"><img data-step-main alt=""><img class="step__detail" data-step-detail alt=""></figure>
-    <p class="step__copy" data-step-copy></p>
-    <p class="stat step__stat" data-step-stat></p>
-    <div class="step__nav"><button class="link-btn" type="button" data-step-prev>Previous step</button><button class="link-btn" type="button" data-step-next>Next step</button></div>
   </div>
 </dialog>
 

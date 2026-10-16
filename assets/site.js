@@ -1,6 +1,6 @@
 /**
  * Orée concept page, v2. Catalogue data, currency, bag, wishlist, account, try-on booking,
- * ring sizer, lookbook hotspots and the scroll-driven film (harvest to packshot) that opens the page.
+ * ring sizer, lookbook hotspots, the scroll-driven hero and the sideways atelier chapters.
  * Everything is kept in this browser (localStorage); nothing is sent anywhere.
  */
 (() => {
@@ -28,8 +28,8 @@
 
   /* ---------------------------------------------------------------- Images */
 
-  const LANDSCAPE = /^(v2-hero|look-|bridal|salon|mas|f\d[a-c]?$)/;
-  const PORTRAIT = /^(w-|gift|c\d-(recolte|fonte|forge|sertissage|polissage|studio)|f\d[a-c]?-m$)/;
+  const LANDSCAPE = /^(v2-hero|look-|bridal|salon|mas)/;
+  const PORTRAIT = /^(w-|gift|c\d-(recolte|fonte|forge|sertissage|polissage|studio))/;
   /** Path to a rendition; `big` picks the larger of the two widths the build makes. */
   function img(name, big = false) {
     const [small, large] = LANDSCAPE.test(name) ? [800, 1536] : PORTRAIT.test(name) ? [600, 1024] : [520, 1024];
@@ -171,7 +171,6 @@
     setStone(currentStone);
     renderLook();
     renderBag();
-    if ($('[data-film-rail]').children.length) renderFilmRail();
     if (pdp.open) refreshPdpPrice();
   }
 
@@ -211,7 +210,6 @@
 
   function openDialog(dialog) {
     if (!dialog.open) dialog.showModal();
-    dialog.scrollTop = 0;
     document.documentElement.style.overflow = 'hidden';
   }
   function closeDialog(dialog) {
@@ -1004,221 +1002,150 @@
     openDialog(acctSheet);
   }
 
-  /* ---------------------------------------------------------------- The film */
+  /* ---------------------------------------------------------------- Hero */
 
-  const film = $('[data-film]');
-  const header = $('[data-header]');
-  const fchaps = $$('[data-fchap]', film);
-  const filmNav = $$('[data-film-nav] a');
-  const filmBar = $('[data-film-progress]');
-  const filmCue = $('[data-film-cue]');
-  const smoothstep = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
+  const hero = $('[data-hero]');
+  const frames = $$('[data-frame]', hero);
+  const steps = $$('[data-steps] li', hero);
+  const sticky = $('.hero__sticky', hero);
+  const copyBox = $('.hero__copy', hero);
+  const threadPath = $('[data-thread]', hero);
+  const threadBead = $('[data-thread-bead]', hero);
+  const threadSvg = $('.hero__thread', hero);
+  const progressBar = $('[data-hero-progress]', hero);
+  const cue = $('[data-hero-cue]', hero);
+  // Where the ring meets the travertine in the source photos (fractions of 1536 × 1024).
+  const SUBJECT = { x: 0.651, y: 0.65 };
+  let threadLength = 0;
+  let lastActive = 0;
 
-  // One run of frames for the whole film; each chapter owns a slice of it.
-  const FRAMES = [];
-  const chapStart = fchaps.map((chap, c) => {
-    const start = FRAMES.length;
-    chap.dataset.frames.split(' ').forEach((name) => FRAMES.push({ name, chap: c }));
-    return start;
-  });
-  const frameEls = FRAMES.map((f, i) => {
-    const pic = document.createElement('picture');
-    pic.className = 'film__frame';
-    pic.style.zIndex = String(i);
-    pic.innerHTML = `<source media="(max-aspect-ratio: 4/5)" data-srcset="img/${f.name}-m-600.webp 600w, img/${f.name}-m-1024.webp 1024w" sizes="100vw"><img alt="" data-srcset="img/${f.name}-800.webp 800w, img/${f.name}-1536.webp 1536w" sizes="100vw" decoding="async">`;
-    $('[data-film-frames]').append(pic);
-    return pic;
-  });
-  function loadFrame(i) {
-    const pic = frameEls[i];
-    if (!pic || pic.dataset.loaded) return;
-    pic.dataset.loaded = '1';
-    $$('[data-srcset]', pic).forEach((el) => { el.srcset = el.dataset.srcset; });
+  function subjectPoint() {
+    const box = sticky.getBoundingClientRect();
+    const frame = frames[0];
+    const iw = frame.naturalWidth || 1536;
+    const ih = frame.naturalHeight || 1024;
+    const scale = Math.max(box.width / iw, box.height / ih);
+    const rw = iw * scale;
+    const rh = ih * scale;
+    const [px, py] = getComputedStyle(frame).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
+    const ox = (box.width - rw) * (isNaN(px) ? 0.5 : px);
+    const oy = (box.height - rh) * (isNaN(py) ? 0.5 : py);
+    return { x: ox + rw * SUBJECT.x, y: oy + rh * SUBJECT.y, w: box.width, h: box.height, left: box.left };
   }
-  [0, 1, 2].forEach(loadFrame);
 
-  let fTarget = 0;
-  let fCurrent = 0;
-  let filmRaf = 0;
-  let activeChap = -1;
-  const still = reducedMotion.matches;
+  /** The honey thread rises from below the frame, ties one loop beside the band and runs into the ring's base, never crossing the copy. */
+  function layoutThread() {
+    const { x, y, w, h, left } = subjectPoint();
+    const r = { x: w * 0.04, y: h * 0.08 };
+    const range = document.createRange();
+    const copyRight = Math.max(...[...copyBox.children].map((el) => { range.selectNodeContents(el); return range.getBoundingClientRect().right; })) - left;
+    const L = { x: Math.max(x - w * 0.14, copyRight + r.x + 20), y: y - h * 0.13 };
+    const P3 = { x: L.x + r.x, y: L.y };
+    const P2 = { x: L.x, y: L.y - r.y };
+    const P1 = { x: L.x - r.x, y: L.y };
+    const P4 = { x: L.x, y: L.y + r.y };
+    const S0 = { x: Math.max(copyRight + 24, L.x - w * 0.035), y: h + 10 };
+    const k = 0.56;
+    threadSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    threadPath.setAttribute('d', [
+      `M ${S0.x} ${S0.y}`,
+      `C ${S0.x + w * 0.01} ${S0.y - h * 0.3}, ${P3.x} ${P3.y + r.y * 1.6}, ${P3.x} ${P3.y}`,
+      `C ${P3.x} ${P3.y - r.y * k}, ${P2.x + r.x * k} ${P2.y}, ${P2.x} ${P2.y}`,
+      `C ${P2.x - r.x * k} ${P2.y}, ${P1.x} ${P1.y - r.y * k}, ${P1.x} ${P1.y}`,
+      `C ${P1.x} ${P1.y + r.y * k}, ${P4.x - r.x * k} ${P4.y}, ${P4.x} ${P4.y}`,
+      `C ${P4.x + w * 0.06} ${P4.y}, ${x - w * 0.05} ${y + h * 0.01}, ${x} ${y}`,
+    ].join(' '));
+    threadLength = threadPath.getTotalLength();
+    threadPath.style.strokeDasharray = `${threadLength}`;
+  }
 
-  /** Where the film is: a float index into FRAMES, plus each chapter's pinned progress (0 when it pins, 1 when it lets go). */
-  function readFilm() {
-    const vh = window.innerHeight;
-    let f = 0;
-    const local = fchaps.map((chap, c) => {
-      const r = chap.getBoundingClientRect();
-      const span = Math.max(1, r.height - vh);
-      const p = clamp(-r.top / span, 0, 1);
-      const n = chap.dataset.frames.split(' ').length;
-      // Chapters overlap by a screen, so the last chapter that has reached the top is the one playing.
-      // Each chapter runs from half a frame before its first frame to half a frame before the next chapter's.
-      if (r.top <= 0.5) f = chapStart[c] - 0.5 + p * n;
-      return { p, top: r.top };
+  function updateHero() {
+    const rect = hero.getBoundingClientRect();
+    const travel = rect.height - window.innerHeight;
+    const progress = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 1;
+    const position = progress * (frames.length - 1);
+    const active = Math.round(position);
+    frames.forEach((frame, i) => {
+      const distance = Math.abs(position - i);
+      frame.style.opacity = String(clamp(1 - distance * 1.2, 0, 1));
+      frame.style.transform = `scale(${1 + Math.min(distance, 1) * 0.04})`;
     });
-    return { f: clamp(f, 0, FRAMES.length - 1), local };
-  }
-
-  function paintFrames(f) {
-    const base = Math.floor(f);
-    const t = f - base;
-    const mix = smoothstep(0.55, 1, t); // hold, then dissolve into the next frame
-    frameEls.forEach((pic, i) => {
-      let o = 0;
-      if (i === base) o = 1;
-      else if (i === base + 1) o = mix;
-      pic.style.opacity = String(o);
-      if (o > 0 && !still) {
-        // A slow camera push-in while the frame is on screen, drifting left or right in turn.
-        const m = clamp((f - i + 1) / 2.4, 0, 1);
-        const dir = i % 2 ? -1 : 1;
-        pic.style.transform = `translate3d(${dir * (m - 0.5) * 2.2}%, ${(0.5 - m) * 1.2}%, 0) scale(${1.04 + m * 0.09})`;
-      }
-    });
-    for (let i = base - 1; i <= base + 3; i += 1) loadFrame(i);
-  }
-
-  function paintText(local) {
-    fchaps.forEach((chap, c) => {
-      const { p } = local[c];
-      const text = $('[data-fchap-text]', chap);
-      // Text arrives as its chapter pins and leaves just before the next one takes over.
-      const fadeIn = c === 0 ? 1 : smoothstep(0, 0.1, p);
-      const fadeOut = c === fchaps.length - 1 ? 0 : smoothstep(0.84, 0.97, p);
-      const o = fadeIn * (1 - fadeOut);
-      text.style.opacity = o.toFixed(3);
-      text.style.transform = still ? '' : `translate3d(0, ${((1 - fadeIn) * 36 - fadeOut * 36).toFixed(1)}px, 0)`;
-      text.style.visibility = o < 0.01 ? 'hidden' : 'visible';
-    });
-  }
-
-  function updateFilm() {
-    const { f, local } = readFilm();
-    fTarget = f;
-    paintText(local);
-    const fr = film.getBoundingClientRect();
-    const total = clamp(-fr.top / (fr.height - window.innerHeight), 0, 1);
-    filmBar.style.transform = `scaleX(${total})`;
-    header.classList.toggle('is-film', fr.bottom > header.offsetHeight + 1);
-    filmCue.style.opacity = String(clamp(1 - window.scrollY / 240, 0, 1));
-    // Which chapter is on screen, for the chapter strip in the header.
-    let current = 0;
-    local.forEach((l, c) => { if (l.top <= window.innerHeight * 0.5) current = c; });
-    if (current !== activeChap) {
-      activeChap = current;
-      filmNav.forEach((a, i) => {
-        const on = i === current - 1;
-        a.classList.toggle('is-current', on);
-        if (on) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
+    if (active !== lastActive) {
+      steps.forEach((s, i) => {
+        s.classList.toggle('is-active', i === active);
+        if (i === active) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current');
       });
+      lastActive = active;
     }
-    if (still) { fCurrent = fTarget; paintFrames(fCurrent); return; }
-    if (!filmRaf) filmRaf = requestAnimationFrame(tickFilm);
-  }
-  // Ease the film toward the scroll position so scrubbing feels like a camera, not a slideshow.
-  function tickFilm() {
-    filmRaf = 0;
-    fCurrent += (fTarget - fCurrent) * 0.14;
-    if (Math.abs(fTarget - fCurrent) < 0.0005) fCurrent = fTarget;
-    paintFrames(fCurrent);
-    if (fCurrent !== fTarget) filmRaf = requestAnimationFrame(tickFilm);
-  }
-
-  /* Dust in the light: a few warm specks drifting through the beam, nudged by scroll speed. */
-  function initDust() {
-    if (still) return;
-    const canvas = $('[data-dust]');
-    const ctx = canvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    let w = 0; let h = 0; let running = false; let lastY = window.scrollY; let push = 0;
-    const count = window.innerWidth < 700 ? 38 : 80;
-    const specks = Array.from({ length: count }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random() * 1.6, a: 0.12 + Math.random() * 0.45, s: 0.00008 + Math.random() * 0.00022, ph: Math.random() * Math.PI * 2 }));
-    const size = () => { w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
-    size();
-    window.addEventListener('resize', size);
-    function frame(ts) {
-      if (!running) return;
-      const dy = window.scrollY - lastY;
-      lastY = window.scrollY;
-      push = push * 0.9 + dy * 0.00002;
-      ctx.clearRect(0, 0, w, h);
-      for (const p of specks) {
-        p.y -= p.s * 16 + push;
-        p.x += Math.sin(ts * 0.0004 + p.ph) * 0.00012;
-        if (p.y < -0.02) { p.y = 1.02; p.x = Math.random(); }
-        if (p.y > 1.02) p.y = -0.02;
-        const tw = 0.6 + 0.4 * Math.sin(ts * 0.002 + p.ph);
-        ctx.globalAlpha = p.a * tw;
-        ctx.fillStyle = '#FFE2A8';
-        ctx.beginPath();
-        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      requestAnimationFrame(frame);
+    progressBar.style.transform = `scaleX(${progress})`;
+    // The thread is tied while the ring is made; it lets go once the ring goes into its box.
+    const tie = clamp(progress / 0.75, 0, 1);
+    if (threadLength) {
+      threadPath.style.strokeDashoffset = `${threadLength * (1 - tie)}`;
+      threadPath.style.opacity = String(clamp((1 - progress) / 0.2, 0, 1));
+      const pt = threadPath.getPointAtLength(threadLength * tie);
+      threadBead.setAttribute('cx', pt.x);
+      threadBead.setAttribute('cy', pt.y);
+      threadBead.style.opacity = tie > 0.01 && tie < 0.99 ? '1' : '0';
     }
-    new IntersectionObserver(([e]) => {
-      const on = e.isIntersecting && !document.hidden;
-      if (on && !running) { running = true; requestAnimationFrame(frame); }
-      if (!on) running = false;
-    }).observe(film);
+    cue.style.opacity = String(clamp(0.9 - progress * 8, 0, 0.9));
   }
 
-  /* The product rail inside the last chapter. */
-  const FILM_RAIL = ['aube', 'nacre', 'goutte', 'lueur'];
-  function renderFilmRail() {
-    $('[data-film-rail]').innerHTML = FILM_RAIL.map((id) => {
-      const p = PRODUCTS[id];
-      return `<button type="button" data-open-product="${id}"><img src="${img(p.image)}" alt=""><span><b>${p.name}</b>${price(p.price)}</span></button>`;
-    }).join('');
+  function initHero() {
+    if (reducedMotion.matches) {
+      hero.classList.add('hero--static');
+      frames.forEach((f, i) => { f.style.opacity = i === frames.length - 1 ? '1' : '0'; f.loading = 'eager'; });
+      steps.forEach((s, i) => s.classList.toggle('is-active', i === steps.length - 1));
+      return;
+    }
+    frames.forEach((f) => { f.loading = 'eager'; });
+    new ResizeObserver(() => { layoutThread(); updateHero(); }).observe(sticky);
+    if (frames[0].complete) layoutThread(); else frames[0].addEventListener('load', layoutThread, { once: true });
+    document.fonts?.ready.then(() => { layoutThread(); updateHero(); });
+    updateHero();
   }
 
-  /* ---------------------------------------------------------------- Step drawer */
+  /* ---------------------------------------------------------------- Atelier: sideways chapters */
 
-  const STEPS = [
-    { eyebrow: 'I · La Récolte · Harvest', title: 'It starts with gold that already exists.', main: 'c1-recolte', detail: 'c1-grains', stat: ['0 g', 'newly mined gold in any Orée piece'],
-      copy: 'Old jewelry, workshop filings and broken chains are gathered from clients and refiners we know by name. Each lot is weighed and assayed by hand, refined back to pure gold and only then alloyed to 18k. Bring an old piece to the atelier and we credit its gold against a new one.' },
-    { eyebrow: 'II · La Fonte · Melt', title: 'Poured by hand at 1,064 °C.', main: 'c2-fonte', detail: 'c2-lingot', stat: ['1,064 °C', 'the point where gold turns liquid'],
-      copy: 'Marcel melts in small batches in the gas furnace at the back of the mas. Every ingot carries a number that follows it to the bench, so we can tell you which pour your ring came from. The alloy is checked before the pour and again after it.' },
-    { eyebrow: 'III · La Forge · Form', title: 'Drawn, rolled, rounded.', main: 'c3-forge', detail: 'c3-mandrin', stat: ['18', 'passes through the drawplate for one band'],
-      copy: 'The ingot is rolled flat in a hand-cranked mill, then drawn through steel plates, each hole a little smaller, until it is as fine as a band should be. It is rounded on the mandrel and soldered closed. Forged gold is denser than cast gold, so it keeps its shape and polish longer.' },
-    { eyebrow: 'IV · Le Sertissage · Set', title: 'Four claws, one steady hand.', main: 'c4-sertissage', detail: 'c4-griffes', stat: ['0.1 mm', 'tolerance on every claw'],
-      copy: 'The stone is seated in its four claws and each claw is pushed over by hand, then checked under the loupe for the smallest gap. We set low, so the ring slips under a glove and never catches on knitwear, and tight, so the stone stays put for a lifetime.' },
-    { eyebrow: 'V · Le Polissage · Polish', title: 'Polished three times, seen twice.', main: 'c5-polissage', detail: 'c5-controle', stat: ['2', 'sets of eyes on every piece'],
-      copy: 'Felt removes the file marks, cotton softens, and a last mirror polish brings up the shine. A second jeweller then holds the piece to the window and inspects it under a loupe before it is hallmarked. If anything is off, it goes back to the bench.' },
-    { eyebrow: 'VI · L’Écrin · Packshot', title: 'You see your piece before we send it.', main: 'c6-studio', detail: 'c6-coffret', stat: ['1', 'photograph of your actual piece, before it ships'],
-      copy: 'Every order is photographed on our travertine plinth in natural light, and that picture is emailed to you before dispatch, so you see your actual piece first. Then it goes into an olive leather box, is tied with honey ribbon and travels insured to your door.' },
-  ];
-  const stepSheet = $('[data-step]');
-  let stepIndex = 0;
-  function showStep(i) {
-    stepIndex = clamp(i, 0, STEPS.length - 1);
-    const st = STEPS[stepIndex];
-    $('[data-step-eyebrow]').textContent = st.eyebrow;
-    $('[data-step-title]').textContent = st.title;
-    const main = $('[data-step-main]');
-    main.src = img(st.main, true);
-    main.alt = st.title;
-    const det = $('[data-step-detail]');
-    det.src = img(st.detail);
-    det.alt = '';
-    $('[data-step-copy]').textContent = st.copy;
-    $('[data-step-stat]').innerHTML = `<b>${st.stat[0]}</b> ${st.stat[1]}`;
-    $('[data-step-prev]').disabled = stepIndex === 0;
-    $('[data-step-next]').disabled = stepIndex === STEPS.length - 1;
-    $('.sheet__body', stepSheet).scrollTop = 0;
+  const atelier = $('[data-atelier]');
+  const atelierSticky = $('.atelier__sticky', atelier);
+  const track = $('[data-atelier-track]');
+  const chaps = $$('[data-chap]', atelier);
+  const chapNav = $$('[data-goto]', atelier);
+  const atelierBar = $('[data-atelier-progress]');
+  let lastChap = -1;
+
+  const pinned = () => getComputedStyle(atelierSticky).position === 'sticky';
+  function updateAtelier() {
+    if (!pinned()) { track.style.transform = ''; return; }
+    const rect = atelier.getBoundingClientRect();
+    const travel = rect.height - window.innerHeight;
+    const progress = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
+    // Each scroll step lands one chapter on the left edge: move by whole chapter widths plus the gap.
+    const step = chaps.length > 1 ? chaps[1].offsetLeft - chaps[0].offsetLeft : 0;
+    track.style.transform = `translate3d(${-progress * (chaps.length - 1) * step}px, 0, 0)`;
+    atelierBar.style.transform = `scaleX(${progress})`;
+    const active = Math.round(progress * (chaps.length - 1));
+    if (active !== lastChap) {
+      chapNav.forEach((b, i) => { if (i === active) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+      lastChap = active;
+    }
+    // Detail photos drift against the main ones for a little depth.
+    const vw = window.innerWidth;
+    chaps.forEach((c) => {
+      const r = c.getBoundingClientRect();
+      const off = (r.left + r.width / 2 - vw / 2) / vw;
+      c.style.setProperty('--par', `${off * -40}px`);
+    });
   }
-  stepSheet.addEventListener('click', (e) => {
-    if (e.target.closest('[data-step-prev]')) showStep(stepIndex - 1);
-    if (e.target.closest('[data-step-next]')) showStep(stepIndex + 1);
+  atelier.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-goto]');
+    if (!b) return;
+    const i = Number(b.dataset.goto);
+    const top = atelier.getBoundingClientRect().top + window.scrollY;
+    const travel = atelier.offsetHeight - window.innerHeight;
+    window.scrollTo({ top: top + (travel * i) / (chaps.length - 1) + 2, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
   });
-
-  function initFilm() {
-    renderFilmRail();
-    new ResizeObserver(updateFilm).observe(film);
-    initDust();
-    updateFilm();
-  }
 
   /* ---------------------------------------------------------------- Scroll loop */
 
@@ -1228,7 +1155,9 @@
     ticking = true;
     requestAnimationFrame(() => {
       ticking = false;
-      updateFilm();
+      if (!reducedMotion.matches) updateHero();
+      updateAtelier();
+      $('[data-header]').classList.toggle('is-scrolled', window.scrollY > 10);
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -1261,7 +1190,7 @@
       buybar.setAttribute('aria-hidden', String(!on));
       buyBtn.tabIndex = on ? 0 : -1;
     };
-    new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; sync(); }).observe($('[data-film-end]'));
+    new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; sync(); }).observe($('.hero__progress'));
     new IntersectionObserver(([e]) => { atEnd = e.isIntersecting; sync(); }).observe($('.rdv'));
     new IntersectionObserver(([e]) => { if (e.isIntersecting) atEnd = true; else if (e.boundingClientRect.top > 0) atEnd = false; sync(); }).observe($('.join'));
   }
@@ -1355,8 +1284,6 @@
       return openAccount(acct.dataset.openAccount);
     }
     if (e.target.closest('[data-open-sizer]')) { e.preventDefault(); return openSizer(); }
-    const step = e.target.closest('[data-open-step]');
-    if (step) { e.preventDefault(); showStep(Number(step.dataset.openStep)); return openDialog(stepSheet); }
     if (e.target.closest('[data-open-menu]')) { e.preventDefault(); return openDialog($('[data-menu]')); }
     if (e.target.closest('[data-open-cart]')) { e.preventDefault(); renderBag(); return openDialog(cartDialog); }
   });
@@ -1379,7 +1306,7 @@
   renderCal();
   renderBookPieces();
   renderAccount();
-  initFilm();
+  initHero();
   initObservers();
   initCursor();
   initCurrency();
@@ -1391,7 +1318,7 @@
     // The curtain stays long enough for the mark to finish (1.3 s) and lifts once fonts and the first frame are in, 2 s at most.
     const start = performance.now();
     Promise.race([
-      Promise.all([document.fonts ? document.fonts.ready : null, new Promise((r) => { const first = $('img', frameEls[0]); if (first.complete && first.naturalWidth) r(); else first.addEventListener('load', r, { once: true }); })]),
+      Promise.all([document.fonts ? document.fonts.ready : null, new Promise((r) => { if (frames[0].complete) r(); else frames[0].addEventListener('load', r, { once: true }); })]),
       new Promise((r) => setTimeout(r, 2000)),
     ]).then(() => setTimeout(lift, Math.max(0, 1300 - (performance.now() - start))));
   }
