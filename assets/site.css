@@ -201,7 +201,7 @@ legend { padding: 0; }
 @media (max-width: 420px) { .logo__word { letter-spacing: 0.26em; margin-right: -0.26em; font-size: 1.25rem; } .logo__mark { width: 30px; height: 30px; } }
 
 /* ------------------------------------------------------------ Hero */
-.hero { position: relative; height: 470vh; background: #F0DEC0; }
+.hero { position: relative; height: 640vh; background: #F0DEC0; }
 .hero__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 .hero__frames { position: absolute; inset: 0; }
 .hero__frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; opacity: 0; will-change: opacity, transform; }
@@ -259,7 +259,7 @@ legend { padding: 0; }
 .hero--static .hero__cue, .hero--static .hero__thread { display: none; }
 
 @media (max-width: 999px) {
-  .hero { height: 380vh; }
+  .hero { height: 520vh; }
   .hero__sticky { top: var(--header-h); height: calc(100vh - var(--header-h)); height: calc(100svh - var(--header-h)); }
   .hero__frames { bottom: 42%; }
   .hero__frame { object-position: 63% 50%; }

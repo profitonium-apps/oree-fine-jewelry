@@ -1059,17 +1059,38 @@
     threadPath.style.strokeDasharray = `${threadLength}`;
   }
 
+  // Eased toward the scroll position each frame, so scrubbing feels like a camera rather than a slideshow.
+  let heroTarget = 0;
+  let heroCurrent = 0;
+  let heroRaf = 0;
+
   function updateHero() {
     const rect = hero.getBoundingClientRect();
     const travel = rect.height - window.innerHeight;
-    const progress = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 1;
+    heroTarget = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 1;
+    if (!heroRaf) heroRaf = requestAnimationFrame(tickHero);
+  }
+
+  function tickHero() {
+    heroRaf = 0;
+    heroCurrent += (heroTarget - heroCurrent) * 0.16;
+    if (Math.abs(heroTarget - heroCurrent) < 0.0004) heroCurrent = heroTarget;
+    paintHero(heroCurrent);
+    if (heroCurrent !== heroTarget) heroRaf = requestAnimationFrame(tickHero);
+  }
+
+  /** Stop-motion dissolve: each frame holds, then the next one fades in over it (no double exposure of three frames). */
+  function paintHero(progress) {
     const position = progress * (frames.length - 1);
-    const active = Math.round(position);
+    const base = Math.min(Math.floor(position), frames.length - 1);
+    const t = position - base;
+    const mix = t <= 0.3 ? 0 : t >= 1 ? 1 : ((x) => x * x * (3 - 2 * x))((t - 0.3) / 0.7);
     frames.forEach((frame, i) => {
-      const distance = Math.abs(position - i);
-      frame.style.opacity = String(clamp(1 - distance * 1.2, 0, 1));
-      frame.style.transform = `scale(${1 + Math.min(distance, 1) * 0.04})`;
+      const o = i === base ? 1 : i === base + 1 ? mix : 0;
+      frame.style.opacity = String(o);
+      if (o > 0) frame.style.transform = `scale(${1.045 - clamp((position - i + 1) / 2, 0, 1) * 0.045})`;
     });
+    const active = Number(frames[Math.round(position)].dataset.step);
     if (active !== lastActive) {
       steps.forEach((s, i) => {
         s.classList.toggle('is-active', i === active);
@@ -1079,16 +1100,16 @@
     }
     progressBar.style.transform = `scaleX(${progress})`;
     // The thread is tied while the ring is made; it lets go once the ring goes into its box.
-    const tie = clamp(progress / 0.75, 0, 1);
+    const tie = clamp(progress / 0.82, 0, 1);
     if (threadLength) {
       threadPath.style.strokeDashoffset = `${threadLength * (1 - tie)}`;
-      threadPath.style.opacity = String(clamp((1 - progress) / 0.2, 0, 1));
+      threadPath.style.opacity = String(clamp((1 - progress) / 0.12, 0, 1));
       const pt = threadPath.getPointAtLength(threadLength * tie);
       threadBead.setAttribute('cx', pt.x);
       threadBead.setAttribute('cy', pt.y);
       threadBead.style.opacity = tie > 0.01 && tie < 0.99 ? '1' : '0';
     }
-    cue.style.opacity = String(clamp(0.9 - progress * 8, 0, 0.9));
+    cue.style.opacity = String(clamp(0.9 - progress * 10, 0, 0.9));
   }
 
   function initHero() {
@@ -1098,6 +1119,7 @@
       steps.forEach((s, i) => s.classList.toggle('is-active', i === steps.length - 1));
       return;
     }
+    // Frames a few steps ahead are fetched early so the dissolve never waits on the network.
     frames.forEach((f) => { f.loading = 'eager'; });
     new ResizeObserver(() => { layoutThread(); updateHero(); }).observe(sticky);
     if (frames[0].complete) layoutThread(); else frames[0].addEventListener('load', layoutThread, { once: true });
@@ -1116,11 +1138,25 @@
   let lastChap = -1;
 
   const pinned = () => getComputedStyle(atelierSticky).position === 'sticky';
+  let atTarget = 0;
+  let atCurrent = 0;
+  let atRaf = 0;
   function updateAtelier() {
     if (!pinned()) { track.style.transform = ''; return; }
     const rect = atelier.getBoundingClientRect();
     const travel = rect.height - window.innerHeight;
-    const progress = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
+    atTarget = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
+    if (reducedMotion.matches) { atCurrent = atTarget; return paintAtelier(atCurrent); }
+    if (!atRaf) atRaf = requestAnimationFrame(tickAtelier);
+  }
+  function tickAtelier() {
+    atRaf = 0;
+    atCurrent += (atTarget - atCurrent) * 0.14;
+    if (Math.abs(atTarget - atCurrent) < 0.0004) atCurrent = atTarget;
+    paintAtelier(atCurrent);
+    if (atCurrent !== atTarget) atRaf = requestAnimationFrame(tickAtelier);
+  }
+  function paintAtelier(progress) {
     // Each scroll step lands one chapter on the left edge: move by whole chapter widths plus the gap.
     const step = chaps.length > 1 ? chaps[1].offsetLeft - chaps[0].offsetLeft : 0;
     track.style.transform = `translate3d(${-progress * (chaps.length - 1) * step}px, 0, 0)`;
