@@ -1084,11 +1084,15 @@
     const position = progress * (frames.length - 1);
     const base = Math.min(Math.floor(position), frames.length - 1);
     const t = position - base;
-    const mix = t <= 0.3 ? 0 : t >= 1 ? 1 : ((x) => x * x * (3 - 2 * x))((t - 0.3) / 0.7);
+    // Each frame holds for the first half of its step and then cross-fades quickly into the next: with ~30 frames this
+    // reads as stop-motion, and the two shapes overlap only briefly instead of ghosting for the whole step.
+    const mix = t <= 0.5 ? 0 : t >= 0.92 ? 1 : ((x) => x * x * (3 - 2 * x))((t - 0.5) / 0.42);
+    // One camera for every frame: a slow push-in over the whole hero, so two frames mid-dissolve stay registered.
+    const camera = `scale(${(1 + progress * 0.06).toFixed(4)})`;
     frames.forEach((frame, i) => {
       const o = i === base ? 1 : i === base + 1 ? mix : 0;
       frame.style.opacity = String(o);
-      if (o > 0) frame.style.transform = `scale(${1.045 - clamp((position - i + 1) / 2, 0, 1) * 0.045})`;
+      if (o > 0) frame.style.transform = camera;
     });
     const active = Number(frames[Math.round(position)].dataset.step);
     if (active !== lastActive) {
@@ -1120,7 +1124,9 @@
       return;
     }
     // Frames a few steps ahead are fetched early so the dissolve never waits on the network.
-    frames.forEach((f) => { f.loading = 'eager'; });
+    // The first frames come with the page; the rest are fetched as soon as it has loaded, in order.
+    const fetchRest = () => frames.forEach((f) => { f.loading = 'eager'; });
+    if (document.readyState === 'complete') fetchRest(); else window.addEventListener('load', fetchRest, { once: true });
     new ResizeObserver(() => { layoutThread(); updateHero(); }).observe(sticky);
     if (frames[0].complete) layoutThread(); else frames[0].addEventListener('load', layoutThread, { once: true });
     document.fonts?.ready.then(() => { layoutThread(); updateHero(); });
