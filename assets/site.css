@@ -203,8 +203,9 @@ legend { padding: 0; }
 /* ------------------------------------------------------------ Hero */
 .hero { position: relative; height: 780vh; background: #F0DEC0; }
 .hero__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
-.hero__frames { position: absolute; inset: 0; }
-.hero__frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; opacity: 0; will-change: opacity, transform; transform-origin: 64% 62%; }
+.hero__frames { position: absolute; inset: 0; will-change: transform; transform-origin: 64% 62%; }
+.hero__frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; opacity: 0; }
+.hero__frame.is-live { will-change: opacity; }
 .hero__frame.is-active { opacity: 1; }
 .hero__sticky::before {
   content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;

@@ -1005,6 +1005,7 @@
   /* ---------------------------------------------------------------- Hero */
 
   const hero = $('[data-hero]');
+  const frameBox = $('.hero__frames', hero);
   const frames = $$('[data-frame]', hero);
   const steps = $$('[data-steps] li', hero);
   const sticky = $('.hero__sticky', hero);
@@ -1063,36 +1064,43 @@
   let heroTarget = 0;
   let heroCurrent = 0;
   let heroRaf = 0;
+  // Height the pinned frame covers. The sticky box is sized in svh, so this stays put when a phone's address bar
+  // shows or hides; window.innerHeight changes then, which used to jolt the scrub.
+  let heroView = window.innerHeight;
+  function measureHero() {
+    heroView = (parseFloat(getComputedStyle(sticky).top) || 0) + sticky.offsetHeight;
+  }
 
   function updateHero() {
     const rect = hero.getBoundingClientRect();
-    const travel = rect.height - window.innerHeight;
+    const travel = rect.height - heroView;
     heroTarget = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 1;
     if (!heroRaf) heroRaf = requestAnimationFrame(tickHero);
   }
 
   function tickHero() {
     heroRaf = 0;
-    heroCurrent += (heroTarget - heroCurrent) * 0.16;
+    heroCurrent += (heroTarget - heroCurrent) * 0.12;
     if (Math.abs(heroTarget - heroCurrent) < 0.0004) heroCurrent = heroTarget;
     paintHero(heroCurrent);
     if (heroCurrent !== heroTarget) heroRaf = requestAnimationFrame(tickHero);
   }
 
-  /** Stop-motion dissolve: each frame holds, then the next one fades in over it (no double exposure of three frames). */
+  /** Dissolve: each frame holds briefly, then the next one fades in over it (never more than two frames at once). */
   function paintHero(progress) {
     const position = progress * (frames.length - 1);
     const base = Math.min(Math.floor(position), frames.length - 1);
     const t = position - base;
-    // Each frame holds for the first half of its step and then cross-fades quickly into the next: with ~30 frames this
-    // reads as stop-motion, and the two shapes overlap only briefly instead of ghosting for the whole step.
-    const mix = t <= 0.5 ? 0 : t >= 0.92 ? 1 : ((x) => x * x * (3 - 2 * x))((t - 0.5) / 0.42);
-    // One camera for every frame: a slow push-in over the whole hero, so two frames mid-dissolve stay registered.
-    const camera = `scale(${(1 + progress * 0.06).toFixed(4)})`;
+    // A short hold, then a long, eased cross-fade. The old half-step hold with a quick snap made every small
+    // difference between AI-made frames read as the ring hopping back and forth.
+    const mix = t <= 0.15 ? 0 : ((x) => x * x * (3 - 2 * x))((t - 0.15) / 0.85);
+    // One camera for every frame: a slow push-in on the frame stack, so two frames mid-dissolve stay registered.
+    frameBox.style.transform = `scale(${(1 + progress * 0.06).toFixed(4)})`;
     frames.forEach((frame, i) => {
       const o = i === base ? 1 : i === base + 1 ? mix : 0;
       frame.style.opacity = String(o);
-      if (o > 0) frame.style.transform = camera;
+      // Only the two visible frames get their own GPU layer; 25 full-screen layers stutter on phones.
+      frame.classList.toggle('is-live', o > 0);
     });
     const active = Number(frames[Math.round(position)].dataset.step);
     if (active !== lastActive) {
@@ -1127,7 +1135,8 @@
     // The first frames come with the page; the rest are fetched as soon as it has loaded, in order.
     const fetchRest = () => frames.forEach((f) => { f.loading = 'eager'; });
     if (document.readyState === 'complete') fetchRest(); else window.addEventListener('load', fetchRest, { once: true });
-    new ResizeObserver(() => { layoutThread(); updateHero(); }).observe(sticky);
+    measureHero();
+    new ResizeObserver(() => { measureHero(); layoutThread(); updateHero(); }).observe(sticky);
     if (frames[0].complete) layoutThread(); else frames[0].addEventListener('load', layoutThread, { once: true });
     document.fonts?.ready.then(() => { layoutThread(); updateHero(); });
     updateHero();
